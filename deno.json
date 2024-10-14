@@ -1,0 +1,13 @@
+{
+  "deploy": {
+    "project": "7d36c824-9b31-480f-833a-6f232fe4bd9c",
+    "exclude": [
+      "**/node_modules",
+      "**/cf",
+      "cf.ts",
+      "**/node_modules"
+    ],
+    "include": [],
+    "entrypoint": "src/deno.ts"
+  }
+}
