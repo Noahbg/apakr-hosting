@@ -1,39 +1,35 @@
 name: Deploy Cloudflare
 on:
   push:
-    branches: main
-  pull_request:
-    branches: main
+    branches:
+      - main
+  repository_dispatch:
 
 jobs:
-  deploy:
-    name: Deploy
+  deploy_cloudflare:
     runs-on: ubuntu-latest
-
-    permissions:
-      id-token: write # Needed for auth with Deno Deploy
-      contents: read # Needed to clone the repository
-
+    timeout-minutes: 10
+    if: ${{ github.event.inputs.action_name == 'deploy_to_cf_workers' }}
     steps:
-      - name: Clone repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v2
 
-      - name: Install Deno
-        uses: denoland/setup-deno@v1
+      - name: Publish
+        uses: cloudflare/wrangler-action@2.0.0
         with:
-          deno-version: v1.x
+          accountId: ${{ secrets.CF_ACCOUNT_ID }}
+          apiToken: ${{ secrets.CF_API_TOKEN }}
+          preCommands: |
+            # Get jq
+            apt-get update -y && apt-get install -y jq
 
-      - name: Install Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: lts/*
+            # Install packages
+            npm install
 
-      - name: Install step
-        run: "yarn"
+            # Create the namespace if it doesn't exist
+            wrangler2 kv namespace list | grep -q apakr-files || wrangler2 kv:namespace create apakr-files
 
-      - name: Upload to Deno Deploy
-        uses: denoland/deployctl@v1
-        with:
-          project: "asriel-apakr-hosti-37"
-          entrypoint: "src/deno.ts"
-          root: "."
+            # Get the namespace ID
+            namespaceid=$(wrangler2 kv namespace list | jq '.[] | select(.title=="apakr-apakr-files") | .id')
+
+            # Add the binding to the wrangler.toml
+            echo "kv_namespaces = [ { binding = 'ApakrFiles', id = $namespaceid } ]" >> wrangler.toml
