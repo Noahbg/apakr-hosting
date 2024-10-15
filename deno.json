@@ -3,8 +3,7 @@
     "exclude": [
       "**/node_modules",
       "**/cf",
-      "cf.ts",
-      "**/node_modules"
+      "cf.ts"
     ],
     "include": [],
     "entrypoint": "src/deno.ts"
