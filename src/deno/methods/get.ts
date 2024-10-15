@@ -15,5 +15,5 @@ const caches = {
 };
 
 export async function GetHandler(Context: Context): Promise<Response> {
-	return await GetFileResponse(Context.req.header('user-agent'), Context.env, Context.req.url, caches);
+	return await GetFileResponse(Context, Context.req.header('user-agent'), Context.env, Context.req.url, caches);
 }

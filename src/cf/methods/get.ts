@@ -5,5 +5,5 @@ export async function GetHandler(
 	Environment: Env,
 	_: ExecutionContext
 ): Promise<Response> {
-	return await GetFileResponse(Request.headers.get('user-agent'), Environment, Request.url, caches);
+	return await GetFileResponse(Request, Request.headers.get('user-agent'), Environment, Request.url, caches);
 }

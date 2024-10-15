@@ -1,9 +1,6 @@
 import { GetHandler } from './cf/methods/get.ts';
 import { PostHandler } from './cf/methods/post.ts';
-
-interface Env {
-	ApakrFiles: KVNamespace;
-}
+import type { Env } from './env.d.ts';
 
 export default {
 	async fetch(

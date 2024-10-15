@@ -1,5 +1,7 @@
 import { DeniedResponse, MissingFileResponse, UnauthorizedResponse, BadParametersResponse } from './responses.ts';
+import type { Context } from 'npm:hono';
 import { createHash as Hash } from 'node:crypto';
+import type { Env } from './env.d.ts';
 
 const FileRegex = /data\/apakr\/([0-9a-fA-F]+\.bsp\.bz2)/;
 
@@ -15,7 +17,7 @@ export function HandleProxiedURL(ProxyURL: string | null, File: string) {
 	return MissingFileResponse();
 }
 
-export async function GetFileResponse(UserAgent: string | undefined, Environment: Env, RequestURL: string, caches: any) {
+export async function GetFileResponse(Request: unknown, UserAgent: string | undefined, Environment: Env, RequestURL: string, caches: any) {
 	if (UserAgent !== 'Half-Life 2') return DeniedResponse();
 
 	const { searchParams: SearchParams } = new URL(RequestURL);
@@ -35,10 +37,11 @@ export async function GetFileResponse(UserAgent: string | undefined, Environment
 	if (!Match || Match.length === 0) return HandleProxiedURL(ProxyURL, File);
 
 	const CacheResponse: Response | undefined = await caches.default.match(Request);
-	if (CacheResponse) return CacheResponse;
+	if (CacheResponse) return CacheResponse.clone();
 
 	const Key = `${ServerIdentifier}_${Match[1]}`;
 	const FileContent = await Environment.ApakrFiles.get(Key, 'arrayBuffer');
+	if (!FileContent) return HandleProxiedURL(ProxyURL, File);
 
 	const FileResponse = new Response(FileContent, {
 		headers: {
@@ -87,6 +90,7 @@ export async function PostFileResponse(
 	if (URL.substring(URL.length - 1, URL.length) === '/') URL = URL.substring(0, URL.length - 1);
 
 	if (Environment.ApakrFiles.get(Key, 'arrayBuffer') !== null) await Environment.ApakrFiles.put(Key, Content);
+	if (Environment.SaveKVStore) Environment.SaveKVStore();
 
 	return new Response(`File written.`, {
 		status: 200,
