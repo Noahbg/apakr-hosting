@@ -33,21 +33,3 @@ jobs:
 
             # Add the binding to the wrangler.toml
             echo "kv_namespaces = [ { binding = 'ApakrFiles', id = $namespaceid } ]" >> wrangler.toml
-  deploy_deno:
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    if: contains(github.event.inputs.action_name, '[Deno Deploy]')
-    steps:
-      - uses: actions/checkout@v2
-      
-      - name: Install Deno
-        uses: denoland/setup-deno@v1
-        with:
-          deno-version: v1.x
-
-      - name: Upload to Deno Deploy
-        uses: denoland/deployctl@v1
-        with:
-          project: apakr-hosting
-          entrypoint: "src/deno.ts"
-          root: "."
