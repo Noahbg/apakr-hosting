@@ -1,0 +1,13 @@
+version: "3.3"
+
+services:
+  app:
+    container_name: apakr-hosting
+    build:
+      context: ./
+      dockerfile: ./docker/Dockerfile
+    image: denoland/deno:alpine
+    ports:
+      - "${DENO_HOST:-0.0.0.0}:${DENO_PORT:-9650}:${CONTAINER_PORT:-9660}/tcp"
+    env_file:
+      - ./.env

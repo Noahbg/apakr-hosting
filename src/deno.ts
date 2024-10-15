@@ -5,6 +5,7 @@ import { GetHandler } from './deno/methods/get.ts';
 import { PostHandler } from './deno/methods/post.ts';
 import 'https://deno.land/x/worker_types@v1.0.0/cloudflare-worker-types.ts';
 import { DsDDB } from 'https://deno.land/x/dsddb@v2.1.0/mod.ts';
+import { configDotenv } from 'npm:dotenv';
 
 const KVStore = new DsDDB<ArrayBuffer>();
 
@@ -37,5 +38,13 @@ App.get('/', GetHandler);
 App.post('/', PostHandler);
 
 KVStore.load().then(function () {
-	Deno.serve({ port: 3984 }, App.fetch);
+	configDotenv();
+
+	Deno.serve(
+		{
+			port: parseInt(Deno.env.get('CONTAINER_PORT') || Deno.env.get('DENO_PORT') || '9650'),
+			hostname: Deno.env.get('DENO_HOST') || '0.0.0.0',
+		},
+		App.fetch
+	);
 });
