@@ -5,14 +5,12 @@ const cache = new Map();
 
 const caches = {
 	default: {
-		async match(Context: Context) {
-			let Match: any = cache.get(Context.req.url);
+		async match(Context: Context): Promise<Response | void> {
+			const Match: Response | undefined = cache.get(Context.req.url);
 
-			if (typeof Match !== 'undefined' && Match instanceof Response) return Match.clone();
-
-			return Match;
+			return Match ? Match.clone() : undefined;
 		},
-		async put(Context: Context, Response: Response) {
+		async put(Context: Context, Response: Response): Promise<void> {
 			cache.set(Context.req.url, Response);
 		},
 	},
