@@ -92,7 +92,7 @@ export async function PostFileResponse(
 	if (Environment.ApakrFiles.get(Key, 'arrayBuffer') !== null) await Environment.ApakrFiles.put(Key, Content);
 	if (Environment.SaveKVStore) Environment.SaveKVStore();
 
-	return new Response(`File written.`, {
+	return new Response('File written.', {
 		status: 200,
 		headers: {
 			'X-Download-URL': `${URL}/?server=${Authorization}${
