@@ -1,8 +1,4 @@
-<<<<<<< HEAD:.github/workflows/deploy.yml
-name: Deploy
-=======
 name: Deploy Cloudflare
->>>>>>> be67a3e (rename it):.github/workflows/deploy_cf.yml
 on:
   push:
     branches: main
