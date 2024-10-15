@@ -6,7 +6,11 @@ const cache = new Map();
 const caches = {
 	default: {
 		async match(Context: Context) {
-			return cache.get(Context.req.url);
+			let Match: any = cache.get(Context.req.url);
+
+			if (typeof Match !== 'undefined' && Match instanceof Response) return Match.clone();
+
+			return Match;
 		},
 		async put(Context: Context, Response: Response) {
 			cache.set(Context.req.url, Response);

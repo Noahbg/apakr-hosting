@@ -37,7 +37,7 @@ export async function GetFileResponse(Request: unknown, UserAgent: string | unde
 	if (!Match || Match.length === 0) return HandleProxiedURL(ProxyURL, File);
 
 	const CacheResponse: Response | undefined = await caches.default.match(Request);
-	if (CacheResponse) return CacheResponse.clone();
+	if (CacheResponse) return CacheResponse;
 
 	const Key = `${ServerIdentifier}_${Match[1]}`;
 	const FileContent = await Environment.ApakrFiles.get(Key, 'arrayBuffer');
