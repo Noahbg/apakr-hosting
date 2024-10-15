@@ -9,6 +9,7 @@ jobs:
   deploy_cloudflare:
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    if: ${{ github.event.inputs.action_name == 'deploy_to_cf_workers' }}
     steps:
       - uses: actions/checkout@v2
 
@@ -35,6 +36,7 @@ jobs:
   deploy_deno:
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    if: contains(github.event.inputs.action_name, '[Deno Deploy]')
     steps:
       - uses: actions/checkout@v2
       
@@ -46,5 +48,6 @@ jobs:
       - name: Upload to Deno Deploy
         uses: denoland/deployctl@v1
         with:
+          project: apakr-hosting
           entrypoint: "src/deno.ts"
           root: "."
